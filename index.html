@@ -570,21 +570,63 @@
   }
 
   // ── Captura do lead + PDF ──────────────────────────────────────────────
-  const DDDS = new Set([11,12,13,14,15,16,17,18,19,21,22,24,27,28,31,32,33,34,35,37,38,41,42,43,44,45,46,47,48,49,51,53,54,55,61,62,63,64,65,66,67,68,69,71,73,74,75,77,79,81,82,83,84,85,86,87,88,89,91,92,93,94,95,96,97,98,99]);
-  function validaZap(v){
-    const d = String(v||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');
-    if(d.length<10 || d.length>11) return null;
-    if(!DDDS.has(+d.slice(0,2))) return null;
-    if(d.length===11 && d[2]!=='9') return null;
-    const corpo = d.slice(2);
-    if(/^(\d)\1+$/.test(corpo) || /^9?(12345678|23456789|98765432|87654321|01234567|1234567890?)$/.test(corpo)) return null;
-    return '55'+d;
+  // ---------- Validação anti-teste/anti-curioso (mesmas regras do funil Shark) ----------
+  // Nome: radicais longos comparados por "contém" (pegam variações tipo
+  // "validsao", "testerson") e palavras curtas só por igualdade exata (senão
+  // "oi" pegaria "Moisés"). Exige nome + sobrenome.
+  const FAKE_NAME_STEMS = [
+    'teste', 'testand', 'testar', 'testad', 'testing', 'tester',
+    'valid', 'verific', 'checand', 'checagem', 'conferind', 'conferir',
+    'exempl', 'amostr', 'sample', 'demonstr', 'rascunh', 'provand',
+    'simul', 'dummy', 'placehold', 'generic', 'padrao',
+    'lorem', 'ipsum', 'falso', 'falsa', 'mentira', 'brincadeir', 'brincand',
+    'temporari', 'xpto', 'foobar',
+    'fulano', 'ciclano', 'beltrano', 'seunome'
+  ];
+  const FAKE_NAME_EXACT = new Set([
+    'demo', 'temp', 'foo', 'bar', 'abc', 'abcd', 'abcde', 'abcdef',
+    'asdf', 'asdfg', 'asdfgh', 'qwerty', 'qwe',
+    'nao', 'naosei', 'sei', 'sla', 'oi', 'ola', 'kkk', 'kkkk',
+    'nada', 'vazio', 'embranco', 'qualquer', 'aaa', 'bbb', 'ccc',
+    'nome', 'sobrenome', 'xxxx', 'yyyy', 'zzzz'
+  ]);
+  const normalizeText = str => String(str||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  const isRepeatedDigits = s => /^(\d)\1+$/.test(s);
+  function isSequentialDigits(s){
+    let asc=true, desc=true;
+    for(let i=1;i<s.length;i++){ if(+s[i]!==+s[i-1]+1) asc=false; if(+s[i]!==+s[i-1]-1) desc=false; }
+    return asc||desc;
   }
-  function validaNome(v){
-    const n = String(v||'').trim().replace(/\s+/g,' ');
-    if(n.length<3 || !/[a-zà-ú]/i.test(n)) return null;
-    if(/\b(teste|test|exemplo|asdf|qwer|xxx|aaa|fulano)\b/i.test(n)) return null;
-    return n;
+  function validaNome(rawName){
+    const clean = String(rawName||'').trim().replace(/\s+/g,' ');
+    const norm = normalizeText(clean);
+    if(!norm) return null;
+    const compact = norm.replace(/\s+/g,'');
+    if(compact.length<4) return null;
+    if(!/[a-z]/.test(compact)) return null;
+    if(/^(.)\1+$/.test(compact)) return null;                 // "aaaaaa"
+    const words = norm.split(/\s+/).filter(Boolean);
+    if(words.length<2) return null;                          // nome + sobrenome
+    const stripped = words.map(w=>w.replace(/[0-9]+$/,''));  // "teste1" -> "teste"
+    if(stripped.some(w=>FAKE_NAME_EXACT.has(w))) return null;
+    if(stripped.some(w=>FAKE_NAME_STEMS.some(stem=>w.includes(stem)))) return null;
+    return clean;
+  }
+
+  const VALID_BR_DDDS = new Set([11,12,13,14,15,16,17,18,19,21,22,24,27,28,31,32,33,34,35,37,38,41,42,43,44,45,46,47,48,49,51,53,54,55,61,62,63,64,65,66,67,68,69,71,73,74,75,77,79,81,82,83,84,85,86,87,88,89,91,92,93,94,95,96,97,98,99]);
+  function validaZap(v){
+    const digits = String(v||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');
+    if(digits.length!==10 && digits.length!==11) return null;
+    if(isRepeatedDigits(digits)) return null;
+    if(isSequentialDigits(digits)) return null;
+    if(!VALID_BR_DDDS.has(+digits.slice(0,2))) return null;
+    const local = digits.slice(2);
+    if(isRepeatedDigits(local)) return null;
+    if(digits.length===11 && local[0]!=='9') return null;    // celular BR começa com 9
+    // sequência/repetição só na parte que a pessoa "escolhe" (sem DDD e sem o 9 fixo)
+    const core = digits.length===11 ? local.slice(1) : local;
+    if(core.length>=5 && (isRepeatedDigits(core) || isSequentialDigits(core))) return null;
+    return '55'+digits;
   }
   $('leadZap').addEventListener('input', e=>{
     const d = e.target.value.replace(/\D/g,'').slice(0,11);
@@ -689,8 +731,8 @@
     const err=$('leadErr'), ok=$('leadOk'), btn=$('leadBtn'); err.style.display='none'; ok.style.display='none';
     if(!last){ err.textContent='Faça a simulação primeiro.'; err.style.display='block'; return; }
     const nome = validaNome($('leadNome').value), zap = validaZap($('leadZap').value);
-    if(!nome){ err.textContent='Digite seu nome (como quer ser chamado).'; err.style.display='block'; $('leadNome').focus(); return; }
-    if(!zap){ err.textContent='Digite um WhatsApp válido com DDD, ex.: (61) 99999-9999.'; err.style.display='block'; $('leadZap').focus(); return; }
+    if(!nome){ err.textContent='Preencha seu nome e sobrenome de verdade — é assim que vamos te chamar no plano.'; err.style.display='block'; $('leadNome').focus(); return; }
+    if(!zap){ err.textContent='Digite um WhatsApp válido, com DDD (ex: 11 96234-8517).'; err.style.display='block'; $('leadZap').focus(); return; }
     btn.disabled=true; const txt=btn.textContent; btn.textContent='Gerando seu plano…';
     try{
       try{ localStorage.setItem('vr_lead', JSON.stringify({nome, zapFmt:$('leadZap').value})); }catch(_){}
