@@ -673,7 +673,13 @@
     await loadPdfLib();
     buildPdf(nome);
     const nomeArq = 'plano-viver-de-renda-'+nome.split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z]/g,'')+'.pdf';
+    // html2canvas desloca o conteúdo se a página estiver rolada (ou rolando): vai ao topo, gera, volta
+    const sy = window.scrollY, html = document.documentElement, sb = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto'; window.scrollTo(0,0);
+    await new Promise(r=>setTimeout(r,60));
+    try{
     await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['table','.k','.verd','svg']} }).from($('pdf')).save();
+    } finally { window.scrollTo(0,sy); html.style.scrollBehavior = sb; }
   }
 
   let ultimoNome = null;
