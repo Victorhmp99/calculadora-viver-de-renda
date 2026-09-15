@@ -139,7 +139,8 @@
   .cta .ok{display:none;align-items:center;gap:10px;color:var(--ok);font-weight:600;margin-top:12px}
   .cta .priv{color:var(--dim);font-size:12px;margin:10px 0 0}
   button[disabled]{opacity:.6;cursor:wait;transform:none!important}
-  #pdf{position:absolute;left:-10000px;top:0;width:794px;background:#fff;color:#111827;font:13px/1.5 "Inter",Arial,sans-serif;padding:36px 40px}
+  #pdfWrap{position:absolute;left:-10000px;top:0;width:794px;overflow:hidden;pointer-events:none}
+  #pdf{width:794px;background:#fff;color:#111827;font:13px/1.5 "Inter",Arial,sans-serif;padding:36px 40px}
   #pdf *{box-sizing:border-box}
   #pdf h1{font:700 26px/1.15 "Space Grotesk",Arial,sans-serif;margin:0 0 4px;color:#0b1220;letter-spacing:-.02em}
   #pdf h2{font:700 15px "Space Grotesk",Arial,sans-serif;margin:22px 0 8px;color:#0f766e;text-transform:uppercase;letter-spacing:.08em}
@@ -297,7 +298,7 @@
     </div>
   </section>
 
-  <div id="pdf" aria-hidden="true"></div>
+  <div id="pdfWrap" aria-hidden="true"><div id="pdf"></div></div>
   <div id="noprint"><b>Esta página não pode ser impressa.</b><br>Para guardar seu plano, use o botão “Baixar meu plano em PDF” na página.</div>
   <footer>Simulação educativa: não considera imposto sobre saques, mudanças de taxa ao longo do tempo nem eventos de vida. Use como ponto de partida, não como garantia.</footer>
 </div>
@@ -618,7 +619,7 @@
 
   async function enviarLead(payload){
     if(!CRM.tenant_id || !CRM.webhook_key){ console.warn('[lead] CRM não configurado; lead não enviado', payload); return {skipped:true}; }
-    const ctrl = new AbortController(); const t = setTimeout(()=>ctrl.abort(), 8000);
+    const ctrl = new AbortController(); const t = setTimeout(()=>ctrl.abort(), 15000);
     try{
       const r = await fetch(CRM.url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), signal: ctrl.signal});
       return await r.json().catch(()=>({status:r.status}));
