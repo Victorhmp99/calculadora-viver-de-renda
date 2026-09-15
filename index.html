@@ -151,7 +151,8 @@
   #pdf table{width:100%;border-collapse:collapse;font-size:12.5px}
   #pdf td{padding:7px 8px;border-bottom:1px solid #e5e7eb;vertical-align:top}
   #pdf td:last-child{text-align:right;font-family:"JetBrains Mono",Consolas,monospace;font-weight:700;white-space:nowrap}
-  #pdf .k{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  #pdf .k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  #pdf .sec{page-break-inside:avoid;break-inside:avoid}
   #pdf .k div{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
   #pdf .k small{display:block;color:#6b7280;font-size:11px}
   #pdf .k b{display:block;font:700 17px "JetBrains Mono",Consolas,monospace;margin-top:2px}
@@ -645,27 +646,27 @@
     let comp = '';
     if(o.patrimonioRef){
       const pJ = o.juros/o.patrimonioRef;
-      comp = `<h2>Efeito dos juros compostos</h2><table>
+      comp = `<div class="sec"><h2>Efeito dos juros compostos</h2><table>
         <tr><td>Saiu do seu bolso (aportes + valor inicial)</td><td>${brl.format(o.totalAportado)}</td></tr>
         <tr><td>Gerado pelos juros compostos</td><td>${brl.format(o.juros)}</td></tr>
         <tr><td>Patrimônio aos ${i.idadeAp}</td><td>${brl.format(o.patrimonioRef)}</td></tr>
-        <tr><td>Participação dos juros no total</td><td>${(pJ*100).toFixed(0)}%</td></tr></table>`;
+        <tr><td>Participação dos juros no total</td><td>${(pJ*100).toFixed(0)}%</td></tr></table></div>`;
     }
     $('pdf').innerHTML = `
       <h1>Plano para viver de renda</h1>
       <div class="meta">Preparado para <b>${nome}</b> · ${data} · calculadora online</div>
       <div class="verd ${verdict.cls}"><small style="color:#6b7280;letter-spacing:.08em;text-transform:uppercase;font-size:10.5px">${verdict.st}</small><b>${verdict.title}</b>${verdict.text}</div>
-      <h2>Números-chave</h2>
-      <div class="k">${kpis.map(k=>`<div><small>${k[0]}</small><b>${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div>
-      <h2>Seus dados</h2>
-      <table>${params.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td></tr>`).join('')}</table>
+      <div class="sec"><h2>Números-chave</h2>
+      <div class="k">${kpis.map(k=>`<div><small>${k[0]}</small><b>${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div></div>
+      <div class="sec"><h2>Seus dados</h2>
+      <table>${params.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td></tr>`).join('')}</table></div>
       ${comp}
-      ${alts.length ? `<h2>Alternativas</h2><table>${alts.map(a=>`<tr><td><b>${a[0]}</b><br><span style="color:#6b7280">${a[2]}</span></td><td>${a[1]}</td></tr>`).join('')}</table>` : ''}
-      <h2>Evolução do patrimônio (dinheiro de hoje)</h2>
+      ${alts.length ? `<div class="sec"><h2>Alternativas</h2><table>${alts.map(a=>`<tr><td><b>${a[0]}</b><br><span style="color:#6b7280">${a[2]}</span></td><td>${a[1]}</td></tr>`).join('')}</table></div>` : ''}
+      <div class="sec"><h2>Evolução do patrimônio (dinheiro de hoje)</h2>
       ${chartSvg(o, true)}
-      <div style="font-size:11px;color:#6b7280;margin-top:4px">Linha cheia: patrimônio · pontilhada: só o que saiu do bolso · ponto vermelho: capital necessário na aposentadoria</div>
-      <h2>Como foi calculado</h2>
-      <ul>${notes.map(n=>`<li>${n[1]}</li>`).join('')}</ul>
+      <div style="font-size:11px;color:#6b7280;margin-top:4px">Linha cheia: patrimônio · pontilhada: só o que saiu do bolso · ponto vermelho: capital necessário na aposentadoria</div></div>
+      <div class="sec"><h2>Como foi calculado</h2>
+      <ul>${notes.map(n=>`<li>${n[1]}</li>`).join('')}</ul></div>
       <div class="foot">Simulação educativa com juros compostos e taxa real (descontada a inflação). Não considera imposto sobre saques, mudanças de taxa nem eventos de vida. Não é recomendação de investimento.</div>`;
   }
 
@@ -678,7 +679,7 @@
     html.style.scrollBehavior = 'auto'; window.scrollTo(0,0);
     await new Promise(r=>setTimeout(r,60));
     try{
-    await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['table','.k','.verd','svg']} }).from($('pdf')).save();
+    await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['.sec','.verd']} }).from($('pdf')).save();
     } finally { window.scrollTo(0,sy); html.style.scrollBehavior = sb; }
   }
 
