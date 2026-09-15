@@ -673,7 +673,7 @@
     await loadPdfLib();
     buildPdf(nome);
     const nomeArq = 'plano-viver-de-renda-'+nome.split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z]/g,'')+'.pdf';
-    await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff'}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['table','.k','.verd','svg']} }).from($('pdf')).save();
+    await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['table','.k','.verd','svg']} }).from($('pdf')).save();
   }
 
   let ultimoNome = null;
