@@ -139,6 +139,26 @@
   .cta .ok{display:none;align-items:center;gap:10px;color:var(--ok);font-weight:600;margin-top:12px}
   .cta .priv{color:var(--dim);font-size:12px;margin:10px 0 0}
   button[disabled]{opacity:.6;cursor:wait;transform:none!important}
+  /* tela "pronto" + upsell (mesmo padrão da planilha LadyDaysk) */
+  #pronto{display:none;text-align:center;animation:up .5s ease both}
+  #pronto .emoji{font-size:44px;line-height:1;margin-bottom:8px}
+  #pronto h3{display:block;justify-content:center;font-size:26px;margin:0 0 6px}
+  #pronto .sub{color:var(--muted);margin:0 0 18px}
+  #pronto .dl{display:block;width:100%;border-radius:14px;padding:16px 22px;font:700 16px var(--head);color:#04121a;text-decoration:none;
+    background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 10px 30px -8px rgba(34,211,238,.6);transition:transform .15s}
+  #pronto .dl:hover{transform:translateY(-1px)}
+  .upsell{margin-top:26px;border-radius:22px;padding:26px 24px;text-align:left;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#0e7490 0%,#0f766e 45%,#4338ca 100%);box-shadow:0 24px 60px -24px rgba(34,211,238,.7),0 0 0 1px rgba(255,255,255,.08) inset}
+  .upsell::before{content:"";position:absolute;width:360px;height:360px;right:-140px;top:-160px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 65%);pointer-events:none}
+  .upsell .tag{display:inline-block;font:700 11px var(--mono);letter-spacing:.22em;text-transform:uppercase;background:rgba(255,255,255,.18);border-radius:999px;padding:6px 12px}
+  .upsell h4{font:800 clamp(22px,4vw,28px)/1.15 var(--head);letter-spacing:-.02em;margin:14px 0 10px}
+  .upsell p{margin:0 0 20px;color:rgba(255,255,255,.9);font-size:15.5px;line-height:1.5}
+  .upsell p b{color:#fff}
+  .upsell .cta-btn{display:block;width:100%;border-radius:16px;padding:18px 16px;background:#fff;color:#0f766e;font:800 17px/1.2 var(--head);text-align:center;text-decoration:none;
+    box-shadow:0 0 0 4px rgba(255,255,255,.3),0 12px 30px -10px rgba(0,0,0,.45);animation:ctaPulse 1.8s ease-in-out infinite;transition:transform .15s}
+  .upsell .cta-btn:hover{transform:scale(1.03)} .upsell .cta-btn:active{transform:scale(.98)}
+  @keyframes ctaPulse{0%,100%{box-shadow:0 0 0 4px rgba(255,255,255,.3),0 12px 30px -10px rgba(0,0,0,.45)}50%{box-shadow:0 0 0 10px rgba(255,255,255,.12),0 12px 30px -10px rgba(0,0,0,.45)}}
+  @media(prefers-reduced-motion:reduce){.upsell .cta-btn{animation:none}}
   #pdfWrap{position:absolute;left:-10000px;top:0;width:733px;overflow:hidden;pointer-events:none}
   #pdf{width:733px;background:#fff;color:#111827;font:13px/1.5 "Inter",Arial,sans-serif;padding:24px 28px}
   #pdf,#pdf *{box-sizing:border-box}
@@ -291,6 +311,19 @@
         <div class="ok" id="leadOk">✓ Plano gerado — se o download não começar, <a href="#" id="leadAgain" style="color:inherit">clique aqui</a>.</div>
         <p class="priv">Seus dados ficam guardados com segurança e não são compartilhados com terceiros.</p>
       </form>
+      <div id="pronto">
+        <div class="emoji">🎉</div>
+        <h3>Prontinho, <span id="prontoNome"></span>!</h3>
+        <p class="sub">Seu plano para viver de renda está liberado:</p>
+        <a href="#" class="dl" id="btnBaixar">📄 Baixar meu plano em PDF</a>
+        <p class="priv" id="prontoDica" style="display:none">Se o download não aparecer, abra esta página no navegador (Chrome/Safari) e clique de novo.</p>
+        <div class="upsell">
+          <span class="tag">O planejamento é só o começo</span>
+          <h4>Quer alavancar seu patrimônio de verdade?</h4>
+          <p>O planejamento financeiro é apenas o início. Se você quer <b>realmente alavancar seu patrimônio de forma estratégica</b>, precisa falar com quem entende — e montar o caminho certo pro seu momento.</p>
+          <a href="#" class="cta-btn" id="btnUpsell">QUERO ALAVANCAR MEU PATRIMÔNIO →</a>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -314,6 +347,8 @@
     pipeline_id: '4193b171-d10d-4538-9a89-9d72956bf2ad',
     origem: 'Calculadora Viver de Renda'
   };
+  // Upsell na tela de "pronto": WhatsApp do Victor com mensagem de origem
+  const LINK_UPSELL = 'https://wa.me/5561996754491?text=Ol%C3%A1%21%20Vim%20pela%20calculadora%20de%20renda%20e%20quero%20alavancar%20meu%20patrim%C3%B4nio.';
   const PDF_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js';
   let last = null;   // última simulação (usada no PDF e no lead)
 
@@ -725,7 +760,7 @@
     } finally { window.scrollTo(0,sy); html.style.scrollBehavior = sb; }
   }
 
-  let ultimoNome = null;
+  let ultimoNome = null, ultimoZap = null;
   $('leadForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const err=$('leadErr'), ok=$('leadOk'), btn=$('leadBtn'); err.style.display='none'; ok.style.display='none';
@@ -738,7 +773,10 @@
       try{ localStorage.setItem('vr_lead', JSON.stringify({nome, zapFmt:$('leadZap').value})); }catch(_){}
       const [leadRes] = await Promise.allSettled([ enviarLead(leadPayload(nome, zap)), gerarPdf(nome) ]);
       if(leadRes.status==='rejected') console.warn('[lead] falha ao enviar', leadRes.reason);
-      ultimoNome = nome; ok.style.display='flex';
+      ultimoNome = nome; ultimoZap = zap;
+      $('prontoNome').textContent = nome.split(' ')[0];
+      $('leadForm').style.display='none'; $('pronto').style.display='block';
+      $('ctaCard').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(ex){
       console.error(ex);
       err.textContent='Não consegui gerar o PDF agora. Tente novamente em instantes.'; err.style.display='block';
@@ -752,6 +790,17 @@
   // dificulta copiar/salvar o resultado por outros caminhos
   $('res').addEventListener('contextmenu', e=>e.preventDefault());
   $('leadAgain').addEventListener('click', e=>{ e.preventDefault(); if(ultimoNome) gerarPdf(ultimoNome); });
+  $('btnBaixar').addEventListener('click', e=>{ e.preventDefault(); if(ultimoNome){ gerarPdf(ultimoNome).catch(()=>{ $('prontoDica').style.display='block'; }); } });
+  // clique no upsell: marca no card do CRM (mesmo telefone => receive-lead mescla o campo) e abre o WhatsApp
+  $('btnUpsell').href = LINK_UPSELL;
+  $('btnUpsell').addEventListener('click', ()=>{
+    if(!ultimoNome || !CRM.tenant_id) return;
+    try{
+      const body = JSON.stringify({ tenant_id: CRM.tenant_id, webhook_key: CRM.webhook_key, name: ultimoNome, phone: ultimoZap, source:'other', source_campaign: CRM.origem, custom_fields: { clicou_alavancar: 'sim' } });
+      if(navigator.sendBeacon){ navigator.sendBeacon(CRM.url, new Blob([body], {type:'text/plain'})); }
+      else fetch(CRM.url, {method:'POST', headers:{'Content-Type':'application/json'}, body, keepalive:true});
+    }catch(_){}
+  });
 
   function short(v){
     if(v>=1e6) return (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:2})+' mi';
