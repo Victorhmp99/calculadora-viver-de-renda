@@ -327,7 +327,7 @@
       <div id="pronto">
         <div class="emoji">🎉</div>
         <h3>Prontinho, <span id="prontoNome"></span>!</h3>
-        <p class="sub">Seu plano para viver de renda está liberado:</p>
+        <p class="sub">Seu plano para viver de renda está liberado — baixe quando quiser:</p>
         <a href="#" class="dl" id="btnBaixar">📄 Baixar meu plano em PDF</a>
         <p class="priv" id="prontoDica" style="display:none">Se o download não aparecer, abra esta página no navegador (Chrome/Safari) e clique de novo.</p>
         <div class="upsell">
@@ -790,10 +790,13 @@
     const nome = validaNome($('leadNome').value), zap = validaZap($('leadZap').value);
     if(!nome){ err.textContent='Preencha seu nome e sobrenome de verdade — é assim que vamos te chamar no plano.'; err.style.display='block'; $('leadNome').focus(); return; }
     if(!zap){ err.textContent='Digite um WhatsApp válido, com DDD (ex: 11 96234-8517).'; err.style.display='block'; $('leadZap').focus(); return; }
-    btn.disabled=true; const txt=btn.textContent; btn.textContent='Gerando seu plano…';
+    btn.disabled=true; const txt=btn.textContent; btn.textContent='Liberando seu plano…';
     try{
       try{ localStorage.setItem('vr_lead', JSON.stringify({nome, zapFmt:$('leadZap').value})); }catch(_){}
-      const [leadRes] = await Promise.allSettled([ enviarLead(leadPayload(nome, zap)), gerarPdf(nome) ]);
+      // De propósito NÃO gera/abre o PDF aqui: no navegador do Instagram isso
+      // jogaria a pessoa pro arquivo antes de ela ver a oferta. A tela seguinte
+      // mostra os dois botões e ela escolhe. Só pré-carrega a lib pro clique ser rápido.
+      const [leadRes] = await Promise.allSettled([ enviarLead(leadPayload(nome, zap)), loadPdfLib() ]);
       if(leadRes.status==='rejected') console.warn('[lead] falha ao enviar', leadRes.reason);
       ultimoNome = nome; ultimoZap = zap;
       $('prontoNome').textContent = nome.split(' ')[0];
@@ -801,7 +804,7 @@
       $('ctaCard').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(ex){
       console.error(ex);
-      err.textContent='Não consegui gerar o PDF agora. Tente novamente em instantes.'; err.style.display='block';
+      err.textContent='Não consegui liberar o plano agora. Tente novamente em instantes.'; err.style.display='block';
     } finally { btn.disabled=false; btn.textContent=txt; }
   });
 
@@ -812,7 +815,15 @@
   // dificulta copiar/salvar o resultado por outros caminhos
   $('res').addEventListener('contextmenu', e=>e.preventDefault());
   $('leadAgain').addEventListener('click', e=>{ e.preventDefault(); if(ultimoNome) gerarPdf(ultimoNome); });
-  $('btnBaixar').addEventListener('click', e=>{ e.preventDefault(); if(ultimoNome){ gerarPdf(ultimoNome).catch(()=>{ $('prontoDica').style.display='block'; }); } });
+  let gerando = false;
+  $('btnBaixar').addEventListener('click', async e=>{
+    e.preventDefault();
+    if(!ultimoNome || gerando) return;
+    const b = $('btnBaixar'), t = b.textContent; gerando = true; b.textContent = '⏳ Gerando seu PDF…'; b.style.opacity = '.7';
+    try{ await gerarPdf(ultimoNome); b.textContent = '✓ PDF baixado — baixar de novo'; }
+    catch(_){ $('prontoDica').style.display='block'; b.textContent = t; }
+    finally{ gerando = false; b.style.opacity = ''; }
+  });
   // clique no upsell: marca no card do CRM (mesmo telefone => receive-lead mescla o campo) e abre o WhatsApp
   $('btnUpsell').href = LINK_UPSELL;
   $('btnUpsell').addEventListener('click', ()=>{
