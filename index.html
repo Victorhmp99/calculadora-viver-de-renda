@@ -165,7 +165,7 @@
   #pdf .top{padding:34px 0 0}
   #pdf .eyebrow{display:inline-block;font:700 10.5px "JetBrains Mono",Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:#22d3ee;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);border-radius:999px;padding:6px 11px}
   #pdf h1{font:700 30px/1.1 "Space Grotesk",Arial,sans-serif;margin:14px 0 6px;color:#fff;letter-spacing:-.02em}
-  #pdf h1 span{color:#22d3ee}
+  #pdf h1 span{background:none;-webkit-background-clip:initial;background-clip:initial;color:#22d3ee}
   #pdf .meta{color:#8b96a8;font-size:12px;margin-bottom:18px}
   #pdf .meta b{color:#e8edf5}
   #pdf .sec{page-break-inside:avoid;break-inside:avoid;padding-top:22px}
@@ -771,7 +771,13 @@
     html.style.scrollBehavior = 'auto'; window.scrollTo(0,0);
     await new Promise(r=>setTimeout(r,60));
     try{
-    await html2pdf().set({ margin:0, filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#0b1220',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['.sec','.verd']} }).from($('pdf')).save();
+    await html2pdf().set({ margin:0, filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#0b1220',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['.sec','.verd']} }).from($('pdf')).toPdf().get('pdf').then(pdf=>{
+      // o canvas termina antes do fim da última página: pinta o resto de escuro
+      const n = pdf.internal.getNumberOfPages(), pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      const canvasH = $('pdf').offsetHeight, pagePx = 794*ph/pw, resto = canvasH - (n-1)*pagePx;
+      const y = Math.max(0, Math.min(ph, resto/pagePx*ph - 0.6));
+      pdf.setPage(n); pdf.setFillColor(11,18,32); pdf.rect(0, y, pw, ph-y+1, 'F');
+    }).save();
     } finally { window.scrollTo(0,sy); html.style.scrollBehavior = sb; }
   }
 
