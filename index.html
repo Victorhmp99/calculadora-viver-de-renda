@@ -159,27 +159,40 @@
   .upsell .cta-btn:hover{transform:scale(1.03)} .upsell .cta-btn:active{transform:scale(.98)}
   @keyframes ctaPulse{0%,100%{box-shadow:0 0 0 4px rgba(255,255,255,.3),0 12px 30px -10px rgba(0,0,0,.45)}50%{box-shadow:0 0 0 10px rgba(255,255,255,.12),0 12px 30px -10px rgba(0,0,0,.45)}}
   @media(prefers-reduced-motion:reduce){.upsell .cta-btn{animation:none}}
-  #pdfWrap{position:absolute;left:-10000px;top:0;width:733px;overflow:hidden;pointer-events:none}
-  #pdf{width:733px;background:#fff;color:#111827;font:13px/1.5 "Inter",Arial,sans-serif;padding:24px 28px}
+  #pdfWrap{position:absolute;left:-10000px;top:0;width:794px;overflow:hidden;pointer-events:none}
   #pdf,#pdf *{box-sizing:border-box}
-  #pdf h1{font:700 26px/1.15 "Space Grotesk",Arial,sans-serif;margin:0 0 4px;color:#0b1220;letter-spacing:-.02em}
-  #pdf h2{font:700 15px "Space Grotesk",Arial,sans-serif;margin:22px 0 8px;color:#0f766e;text-transform:uppercase;letter-spacing:.08em}
-  #pdf .meta{color:#6b7280;font-size:12px;margin-bottom:18px}
-  #pdf .verd{border-left:5px solid;border-radius:8px;padding:14px 16px;margin:14px 0 6px;background:#f8fafc}
-  #pdf .verd.ok{border-color:#059669} #pdf .verd.warn{border-color:#d97706} #pdf .verd.bad{border-color:#dc2626}
-  #pdf .verd b{display:block;font-size:17px;margin-bottom:3px}
-  #pdf table{width:100%;border-collapse:collapse;font-size:12.5px}
-  #pdf td{padding:7px 8px;border-bottom:1px solid #e5e7eb;vertical-align:top}
-  #pdf td:last-child{text-align:right;font-family:"JetBrains Mono",Consolas,monospace;font-weight:700;white-space:nowrap}
+  #pdf{width:794px;background:#0b1220;color:#e8edf5;font:13px/1.5 "Inter",Arial,sans-serif;padding:0 34px 34px}
+  #pdf .top{padding:34px 0 0}
+  #pdf .eyebrow{display:inline-block;font:700 10.5px "JetBrains Mono",Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:#22d3ee;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);border-radius:999px;padding:6px 11px}
+  #pdf h1{font:700 30px/1.1 "Space Grotesk",Arial,sans-serif;margin:14px 0 6px;color:#fff;letter-spacing:-.02em}
+  #pdf h1 span{color:#22d3ee}
+  #pdf .meta{color:#8b96a8;font-size:12px;margin-bottom:18px}
+  #pdf .meta b{color:#e8edf5}
+  #pdf .sec{page-break-inside:avoid;break-inside:avoid;padding-top:22px}
+  #pdf h2{font:700 11.5px "JetBrains Mono",Consolas,monospace;margin:0 0 10px;color:#22d3ee;text-transform:uppercase;letter-spacing:.18em}
+  #pdf .verd{border-left:4px solid;border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);color:#c7d0dd}
+  #pdf .verd.ok{border-left-color:#34d399} #pdf .verd.warn{border-left-color:#fbbf24} #pdf .verd.bad{border-left-color:#fb7185}
+  #pdf .verd small{display:block;font:700 10px "JetBrains Mono",Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+  #pdf .verd.ok small{color:#34d399} #pdf .verd.warn small{color:#fbbf24} #pdf .verd.bad small{color:#fb7185}
+  #pdf .verd b{display:block;font:700 19px "Space Grotesk",Arial,sans-serif;color:#fff;margin-bottom:4px}
+  #pdf table{width:100%;border-collapse:collapse;font-size:12.5px;color:#c7d0dd}
+  #pdf td{padding:8px 8px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+  #pdf td b{color:#fff}
+  #pdf td:last-child{text-align:right;font-family:"JetBrains Mono",Consolas,monospace;font-weight:700;white-space:nowrap;color:#fff}
   #pdf .k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  #pdf .sec{page-break-inside:avoid;break-inside:avoid}
-  #pdf .k div{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
-  #pdf .k small{display:block;color:#6b7280;font-size:11px}
-  #pdf .k b{display:block;font:700 17px "JetBrains Mono",Consolas,monospace;margin-top:2px}
-  #pdf .k span{display:block;color:#9ca3af;font-size:11px}
-  #pdf ul{margin:0;padding-left:18px;color:#4b5563;font-size:12px} #pdf li{margin:3px 0}
-  #pdf .foot{margin-top:22px;padding-top:10px;border-top:1px solid #e5e7eb;color:#9ca3af;font-size:10.5px}
-  #pdf svg{display:block;width:677px;height:301px}
+  #pdf .k div{background:#111a2e;border:1px solid rgba(255,255,255,.08);border-top:2px solid #22d3ee;border-radius:10px;padding:11px 13px}
+  #pdf .k small{display:block;color:#8b96a8;font-size:11px}
+  #pdf .k b{display:block;font:700 18px "JetBrains Mono",Consolas,monospace;margin-top:3px;color:#fff}
+  #pdf .k span{display:block;color:#5d6878;font-size:11px;margin-top:2px}
+  #pdf .bar{height:12px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.08);display:flex;margin:6px 0 12px}
+  #pdf .bar i{display:block;height:100%} #pdf .bar .ap{background:#64748b} #pdf .bar .ju{background:#22d3ee}
+  #pdf .big{font:700 30px "JetBrains Mono",Consolas,monospace;color:#22d3ee;letter-spacing:-.02em}
+  #pdf .big+p{margin:2px 0 10px;color:#8b96a8}
+  #pdf .chart{background:#0e1628;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 10px 6px}
+  #pdf ul{margin:0;padding-left:18px;color:#8b96a8;font-size:12px} #pdf li{margin:4px 0}
+  #pdf .foot{margin-top:26px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);color:#5d6878;font-size:10.5px;display:flex;justify-content:space-between;gap:16px}
+  #pdf .foot b{color:#8b96a8;font-family:"JetBrains Mono",Consolas,monospace;font-weight:600;white-space:nowrap}
+  #pdf svg{display:block;width:706px;height:314px}
   /* impressão pelo navegador bloqueada: o plano sai só pelo PDF */
   #noprint{display:none}
   @media print{ body>*{display:none!important} body::before,body::after{display:none} body{background:#fff!important} #noprint{display:block!important;font:16px/1.5 Arial,sans-serif;color:#111;padding:40px} }
@@ -550,12 +563,12 @@
   }
 
   function drawChart(o){ $('chart').innerHTML = chartSvg(o, false); }
-  function chartSvg(o, light){
+  function chartSvg(o, light, noGlow){
     const {i, perp, rm, n, m, capital} = o;
     const C = o.aporteRef;
     if(!isFinite(capital) || !isFinite(C)) return '';
     const cTxt = light ? '#6b7280' : '#8b96a8', cGrid = light ? '#e5e7eb' : 'rgba(255,255,255,.08)', cBad = light ? '#dc2626' : '#fb7185', cAp = light ? '#9ca3af' : '#94a3b8';
-    const glow = light ? '' : 'filter="url(#glow)"';
+    const glow = (light||noGlow) ? '' : 'filter="url(#glow)"';
     const mesesRenda = perp ? 30*12 : m;
     const pts = []; let bal, acabou = null;
     for(let k=0;k<=n;k++){ pts.push(fv(i.guardado,C,rm,k)); }
@@ -585,7 +598,7 @@
     const xr = x(n);
     let extra = '';
     if(acabou!==null){ const xa=x(n+acabou); extra += `<text x="${xa}" y="${y(0)-8}" text-anchor="${xa>W-120?'end':'start'}" font-size="13" font-weight="700" fill="${cBad}">↓ acaba aos ${Math.floor(i.idadeAp+acabou/12)}</text>`; }
-    return `<svg viewBox="0 0 ${W} ${H}" ${light?'width="677" height="301"':''} role="img" aria-label="Evolução do patrimônio">
+    return `<svg viewBox="0 0 ${W} ${H}" ${(light||noGlow)?'width="706" height="314"':''} role="img" aria-label="Evolução do patrimônio">
       <defs>
         <linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#34d399"/></linearGradient>
         <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee" stop-opacity=".35"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></linearGradient>
@@ -720,31 +733,33 @@
       ['Taxa do investimento', i.taxa.toLocaleString('pt-BR')+'% '+(i.taxaTipo==='mensal'?'ao mês':'ao ano')+' · inflação '+i.inflacao.toLocaleString('pt-BR')+'% · real '+pct(o.rReal)+' a.a.'],
       ['Aporte mensal planejado', i.aporte===null ? 'não informado' : brl.format(i.aporte)],
     ];
-    let comp = '';
-    if(o.patrimonioRef){
-      const pJ = o.juros/o.patrimonioRef;
-      comp = `<div class="sec"><h2>Efeito dos juros compostos</h2><table>
-        <tr><td>Saiu do seu bolso (aportes + valor inicial)</td><td>${brl.format(o.totalAportado)}</td></tr>
-        <tr><td>Gerado pelos juros compostos</td><td>${brl.format(o.juros)}</td></tr>
-        <tr><td>Patrimônio aos ${i.idadeAp}</td><td>${brl.format(o.patrimonioRef)}</td></tr>
-        <tr><td>Participação dos juros no total</td><td>${(pJ*100).toFixed(0)}%</td></tr></table></div>`;
-    }
+    const pJ = o.patrimonioRef ? o.juros/o.patrimonioRef : 0;
     $('pdf').innerHTML = `
-      <h1>Plano para viver de renda</h1>
-      <div class="meta">Preparado para <b>${nome}</b> · ${data} · calculadora online</div>
-      <div class="verd ${verdict.cls}"><small style="color:#6b7280;letter-spacing:.08em;text-transform:uppercase;font-size:10.5px">${verdict.st}</small><b>${verdict.title}</b>${verdict.text}</div>
+      <div class="top">
+        <span class="eyebrow">Simulação · juros compostos</span>
+        <h1>Plano para <span>viver de renda</span></h1>
+        <div class="meta">Preparado para <b>${nome}</b> · ${data} · renda.pessoaresolve.pro</div>
+      </div>
+      <div class="verd ${verdict.cls}"><small>${verdict.st}</small><b>${verdict.title}</b>${verdict.text}</div>
       <div class="sec"><h2>Números-chave</h2>
       <div class="k">${kpis.map(k=>`<div><small>${k[0]}</small><b>${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div></div>
       <div class="sec"><h2>Seus dados</h2>
       <table>${params.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td></tr>`).join('')}</table></div>
-      ${comp}
-      ${alts.length ? `<div class="sec"><h2>Alternativas</h2><table>${alts.map(a=>`<tr><td><b>${a[0]}</b><br><span style="color:#6b7280">${a[2]}</span></td><td>${a[1]}</td></tr>`).join('')}</table></div>` : ''}
+      ${o.patrimonioRef ? `<div class="sec"><h2>Efeito dos juros compostos</h2>
+        <div class="big">${brl.format(o.juros)}</div>
+        <p>gerados só pelos juros em ${anosMeses(o.n)} — ${(pJ*100).toFixed(0)}% do patrimônio final. Cada R$ 1 guardado vira R$ ${(o.totalAportado>0 ? o.patrimonioRef/o.totalAportado : 0).toLocaleString('pt-BR',{maximumFractionDigits:2})}.</p>
+        <div class="bar"><i class="ap" style="width:${((1-pJ)*100).toFixed(1)}%"></i><i class="ju" style="width:${(pJ*100).toFixed(1)}%"></i></div>
+        <table>
+          <tr><td>Saiu do seu bolso (aportes + valor inicial)</td><td>${brl.format(o.totalAportado)}</td></tr>
+          <tr><td>Gerado pelos juros compostos</td><td>${brl.format(o.juros)}</td></tr>
+          <tr><td>Patrimônio aos ${i.idadeAp}</td><td>${brl.format(o.patrimonioRef)}</td></tr></table></div>` : ''}
+      ${alts.length ? `<div class="sec"><h2>Alternativas</h2><table>${alts.map(a=>`<tr><td><b>${a[0]}</b><br><span style="color:#8b96a8">${a[2]}</span></td><td>${a[1]}</td></tr>`).join('')}</table></div>` : ''}
       <div class="sec"><h2>Evolução do patrimônio (dinheiro de hoje)</h2>
-      ${chartSvg(o, true)}
-      <div style="font-size:11px;color:#6b7280;margin-top:4px">Linha cheia: patrimônio · pontilhada: só o que saiu do bolso · ponto vermelho: capital necessário na aposentadoria</div></div>
+      <div class="chart">${chartSvg(o, false, true)}</div>
+      <div style="font-size:11px;color:#8b96a8;margin-top:8px">Linha cheia: patrimônio · pontilhada: só o que saiu do bolso · ponto vermelho: capital necessário na aposentadoria</div></div>
       <div class="sec"><h2>Como foi calculado</h2>
       <ul>${notes.map(n=>`<li>${n[1]}</li>`).join('')}</ul></div>
-      <div class="foot">Simulação educativa com juros compostos e taxa real (descontada a inflação). Não considera imposto sobre saques, mudanças de taxa nem eventos de vida. Não é recomendação de investimento.</div>`;
+      <div class="foot"><span>Simulação educativa com juros compostos e taxa real (descontada a inflação). Não considera imposto sobre saques, mudanças de taxa nem eventos de vida. Não é recomendação de investimento.</span><b>renda.pessoaresolve.pro</b></div>`;
   }
 
   async function gerarPdf(nome){
@@ -756,7 +771,7 @@
     html.style.scrollBehavior = 'auto'; window.scrollTo(0,0);
     await new Promise(r=>setTimeout(r,60));
     try{
-    await html2pdf().set({ margin:[8,8,10,8], filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#fff',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['.sec','.verd']} }).from($('pdf')).save();
+    await html2pdf().set({ margin:0, filename:nomeArq, image:{type:'jpeg',quality:.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#0b1220',scrollY:0,scrollX:0}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['css','legacy'],avoid:['.sec','.verd']} }).from($('pdf')).save();
     } finally { window.scrollTo(0,sy); html.style.scrollBehavior = sb; }
   }
 
