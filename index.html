@@ -370,6 +370,18 @@
   };
   // Upsell na tela de "pronto": WhatsApp do Victor com mensagem de origem
   const LINK_UPSELL = 'https://wa.me/5561996754491?text=Ol%C3%A1%21%20Vim%20pela%20calculadora%20de%20renda%20e%20quero%20chegar%20l%C3%A1%20mais%20r%C3%A1pido.';
+  // Aviso de novo lead no WhatsApp do Victor via CallMeBot (mesmo esquema do funil Shark)
+  const CALLMEBOT_RECIPIENTS = [{ phone: "556196754491", apikey: "7750951" }];
+  function avisarWhatsApp(nome, zap){
+    if(!CALLMEBOT_RECIPIENTS.length || !last) return;
+    const i = last.o.i, v = last.verdict;
+    const d = zap.replace(/^55/,''); const bonito = `(${d.slice(0,2)}) ${d.slice(2, d.length-4)}-${d.slice(-4)}`;
+    const texto = [`🔔 Novo lead — ${CRM.origem}`, `👤 ${nome}`, `📱 ${bonito}`, `🎯 ${brl.format(i.renda)}/mês · aposentar aos ${i.idadeAp} (hoje ${i.idade})`, `📊 ${v.st}: ${v.title}`, `💬 wa.me/${zap}`].join('\n');
+    CALLMEBOT_RECIPIENTS.forEach(r=>{
+      const url = 'https://api.callmebot.com/whatsapp.php?phone='+encodeURIComponent(r.phone)+'&text='+encodeURIComponent(texto)+'&apikey='+encodeURIComponent(r.apikey);
+      try{ fetch(url, {mode:'no-cors', keepalive:true}).catch(()=>{}); }catch(_){}
+    });
+  }
   const PDF_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js';
   let last = null;   // última simulação (usada no PDF e no lead)
   // eventos do funil no GA4 (simulou -> deixou contato -> baixou PDF -> clicou upsell)
@@ -808,6 +820,7 @@
       // De propósito NÃO gera/abre o PDF aqui: no navegador do Instagram isso
       // jogaria a pessoa pro arquivo antes de ela ver a oferta. A tela seguinte
       // mostra os dois botões e ela escolhe. Só pré-carrega a lib pro clique ser rápido.
+      if(!$('leadHp').value) avisarWhatsApp(nome, zap);
       const [leadRes] = await Promise.allSettled([ enviarLead(leadPayload(nome, zap)), loadPdfLib() ]);
       if(leadRes.status==='rejected') console.warn('[lead] falha ao enviar', leadRes.reason);
       track('generate_lead', { origem: CRM.origem, veredito: last.verdict.st });
