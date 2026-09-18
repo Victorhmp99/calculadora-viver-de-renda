@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora Viver de Renda</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FTFQV6H3LQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FTFQV6H3LQ');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -364,6 +372,8 @@
   const LINK_UPSELL = 'https://wa.me/5561996754491?text=Ol%C3%A1%21%20Vim%20pela%20calculadora%20de%20renda%20e%20quero%20chegar%20l%C3%A1%20mais%20r%C3%A1pido.';
   const PDF_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js';
   let last = null;   // última simulação (usada no PDF e no lead)
+  // eventos do funil no GA4 (simulou -> deixou contato -> baixou PDF -> clicou upsell)
+  const track = (ev, params) => { try{ if(typeof gtag==='function') gtag('event', ev, params||{}); }catch(_){} };
 
   const LIMITE_APORTE = 75;   // idade máxima realista para continuar guardando
   const HORIZONTE_VIDA = 85;  // idade mínima que o planejamento deve cobrir
@@ -423,6 +433,7 @@
     if(falta.length){ err.textContent='Preencha: '+falta.join(', ')+'.'; err.style.display='block'; return; }
     if(inp.idadeAp <= inp.idade){ err.textContent='A idade de aposentadoria precisa ser maior que a idade atual.'; err.style.display='block'; return; }
     render(calc(inp, perp));
+    track('simulou', { modo: perp?'perpetua':'prazo', renda: inp.renda, idade: inp.idade, idade_aposentadoria: inp.idadeAp, tem_aporte: inp.aporte!==null });
   });
 
   function calc(i, perp){
@@ -536,6 +547,7 @@
     notes.push(['', perp ? 'Renda perpétua: o capital rende e você saca só o rendimento real; o principal fica intacto.' : 'Renda por prazo: o capital vai sendo consumido e chega a zero ao final de '+i.anosRenda+' anos.']);
     notes.push(['','Aportes mensais no fim de cada mês; a mesma taxa vale na acumulação e na aposentadoria.']);
 
+    track('resultado', { veredito: st.textContent });
     last = { o, kpis, alts, notes, verdict: { cls: v.className.replace('verdict','').trim(), st: st.textContent, title: title.textContent, text: text.textContent } };
     $('kpis').innerHTML = kpis.map(k=>`<div class="kpi"><small>${k[0]}</small><b data-v="${k[1]}">${k[1]}</b><span>${k[2]}</span></div>`).join('');
     $('altsCard').style.display = alts.length ? '' : 'none';
@@ -798,6 +810,7 @@
       // mostra os dois botões e ela escolhe. Só pré-carrega a lib pro clique ser rápido.
       const [leadRes] = await Promise.allSettled([ enviarLead(leadPayload(nome, zap)), loadPdfLib() ]);
       if(leadRes.status==='rejected') console.warn('[lead] falha ao enviar', leadRes.reason);
+      track('generate_lead', { origem: CRM.origem, veredito: last.verdict.st });
       ultimoNome = nome; ultimoZap = zap;
       $('prontoNome').textContent = nome.split(' ')[0];
       $('leadForm').style.display='none'; $('pronto').style.display='block';
@@ -820,13 +833,14 @@
     e.preventDefault();
     if(!ultimoNome || gerando) return;
     const b = $('btnBaixar'), t = b.textContent; gerando = true; b.textContent = '⏳ Gerando seu PDF…'; b.style.opacity = '.7';
-    try{ await gerarPdf(ultimoNome); b.textContent = '✓ PDF baixado — baixar de novo'; }
+    try{ await gerarPdf(ultimoNome); track('pdf_download', { veredito: last && last.verdict.st }); b.textContent = '✓ PDF baixado — baixar de novo'; }
     catch(_){ $('prontoDica').style.display='block'; b.textContent = t; }
     finally{ gerando = false; b.style.opacity = ''; }
   });
   // clique no upsell: marca no card do CRM (mesmo telefone => receive-lead mescla o campo) e abre o WhatsApp
   $('btnUpsell').href = LINK_UPSELL;
   $('btnUpsell').addEventListener('click', ()=>{
+    track('upsell_click', { destino: 'whatsapp' });
     if(!ultimoNome || !CRM.tenant_id) return;
     try{
       const body = JSON.stringify({ tenant_id: CRM.tenant_id, webhook_key: CRM.webhook_key, name: ultimoNome, phone: ultimoZap, source:'other', source_campaign: CRM.origem, custom_fields: { clicou_alavancar: 'sim' } });
