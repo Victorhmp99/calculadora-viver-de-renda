@@ -72,6 +72,8 @@
   .field .pos{border-left:1px solid var(--line)}
   input[type=text],select{width:100%;min-width:0;padding:11px 13px;border:0;background:transparent;color:var(--ink);font:500 15px var(--mono);outline:0}
   input::placeholder{color:var(--dim)}
+  /* autofill do Chrome: mantém o fundo escuro do campo em vez do azul-claro padrão */
+  input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px #0a1020 inset;-webkit-text-fill-color:#e8edf5;caret-color:#e8edf5;border-radius:inherit;transition:background-color 99999s ease-out 0s}
   .field select{flex:0 0 auto;width:auto;min-width:max-content;color:var(--muted);border-left:1px solid var(--line);cursor:pointer;font-family:var(--sans);font-size:13px;padding:11px 28px 11px 12px;appearance:none;-webkit-appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238b96a8' stroke-width='1.8'/%3E%3C/svg%3E") no-repeat right 10px center}
   .field select option{background:#0f172a;color:var(--ink)}
   .radios{display:flex;gap:10px}
